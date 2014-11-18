@@ -27,21 +27,7 @@ namespace SDP2TP
         static void Main(string[] args)
         {
 
-            ProceccSDPRecords(GetSDPRequests());
-
-            //TP.Project p = new TP.Project(2584);
-            //p.Id = 2584;
-            //TP.Request r = new TP.Request();
-            //r.Name = "test request";
-            //r.Project = p;
-            //r.Description = "Test description";
-
-            //var task = PostRequestToTP(r);
-            //task.Wait();
-
-            //var response = task.Result;
-            //var body = response.Content.ReadAsStringAsync().Result;
-            //Console.WriteLine(body);
+            ProceccSDPRecords(GetSDPRequests());            
         }      
 
         private static List<SDP.Request> GetSDPRequests()
@@ -115,7 +101,7 @@ namespace SDP2TP
                 xmlRequest += "<Project Id='" + r.Project.Id + "' />";
                 xmlRequest += "<EntityState Id='34' />";
                 //xmlRequest += "<Description>" + WebUtility.HtmlDecode(r.Description) + "</Description>";
-                xmlRequest += "<Description><![CDATA[" + r.Description + "]]></Description>";
+                xmlRequest += "<Description><![CDATA[" + r.Description + "]]></Description>";                
                 xmlRequest += "</Request>";
 
                 request.Content = new StringContent(xmlRequest, Encoding.UTF8);
@@ -139,6 +125,31 @@ namespace SDP2TP
             }
         }
 
+        private static void AssignDeveloperToRequest(string requestID, string developerName)
+        {
+            // check that developer exists in TP
+            string developerLastName = developerName.Split(null).ElementAt(0);
+
+            //string getRequest = "Users?where=LastName eq '" + developerName.Split(null).ElementAt(0) + "'&" + TP_TOKEN;
+            string getRequest = "Users?where=(LastName eq 'Mironov') and (IsActive eq 'true')&" + TP_TOKEN;
+            WebClient wc = new WebClient();
+            wc.Encoding = Encoding.UTF8;
+            string developerID = "";
+
+            string getResult = wc.DownloadString(PATH_TP + getRequest);
+            if (getResult.Length > 8)
+            {
+                int start = getResult.IndexOf("<User Id=") + 10;
+                int end = getResult.IndexOf(">", start + 1) - 1;
+                int length = end - start;
+                developerID = getResult.Substring(start, length);
+
+                //create assigment
+                string postRequest = "<Assignment><Assignable Id='" + requestID + "'/><GeneralUser Id='" + developerID + "'></GeneralUser><Role Id='6'/></Assignment>";
+                string postResult = wc.UploadString(PATH_TP + "Assignments?" + TP_TOKEN, "post", postRequest);
+            }
+        }
+
         private static void ProceccSDPRecords(List<SDP.Request> sdp_rs)
         {
             //TO-DO: add iterate through sdp_rs
@@ -147,8 +158,7 @@ namespace SDP2TP
                 TP.Project project = new TP.Project(r.ApplicationName); //TO-DO: Add auto assignnent for projects                
                 TP.Request req = new TP.Request();
                 req.Name = r.Title;
-                req.Project = project;
-                //req.Description = r.Description.Replace("\n", "<br />").Replace("&nbsp;", "<br />");
+                req.Project = project;               
                 req.Description = r.FullDescription.Replace("src=\"/inlineimages/WorkOrder", "src=\"http://rumsk2hpdm01/inlineimages/WorkOrder");
 
                 var task = PostRequestToTP(req);
@@ -156,7 +166,12 @@ namespace SDP2TP
 
                 var response = task.Result;
                 var body = response.Content.ReadAsStringAsync().Result;
-                Console.WriteLine(body);
+                
+                string requestID = body.Substring(13, body.IndexOf(" Name=") -14);
+                
+                AssignDeveloperToRequest(requestID, r.Technician);
+                
+                //Console.WriteLine(body);
             }
                 
             //var task = PostRequestToTP(r);
