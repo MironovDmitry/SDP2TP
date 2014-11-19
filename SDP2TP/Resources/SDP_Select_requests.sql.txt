@@ -1,0 +1,44 @@
+select wo.WORKORDERID, 
+	(select aci.EMAILID 
+	from aaacontactinfo aci
+	where aci.CONTACTINFO_ID = (select auci.CONTACTINFO_ID
+								from aaausercontactinfo auci
+								where auci.USER_ID = wo.REQUESTERID))	Email,
+	(select au.FIRST_NAME
+	from aaauser au
+	where au.USER_ID = wo.REQUESTERID) FullName,	
+	wo.TITLE, 
+	wo.DESCRIPTION,
+	(select wod.FULLDESCRIPTION
+	from workordertodescription wod
+	where wod.WORKORDERID = wo.WORKORDERID) FullDescription, 	
+	(select sd.Name 
+	from servicedefinition sd
+	where sd.SERVICEID = wo.SERVICEID)	ServiceName,
+	(select qd.QUEUENAME
+	from queuedefinition qd
+	where qd.QUEUEID = (select woq.QUEUEID
+						from workorder_queue woq
+						where woq.WORKORDERID = wo.WORKORDERID)) SupportGroup,
+	(select scd.NAME
+	from subcategorydefinition scd
+	where scd.SUBCATEGORYID = (select wos.SUBCATEGORYID
+								from workorderstates wos
+								where wos.WORKORDERID = wo.WORKORDERID)) ApplicationName,
+	(select au.FIRST_NAME
+	from aaauser au
+	where au.USER_ID= (select wos.ownerid
+						from workorderstates wos
+						where wos.WORKORDERID = wo.WORKORDERID)) Technician
+from workorder wo
+	where wo.SERVICEID in (select sd.SERVICEID from servicedefinition sd where sd.NAME in ({services}))
+		and (select qd.QUEUENAME
+			from queuedefinition qd
+			where qd.QUEUEID = (select woq.QUEUEID
+								from workorder_queue woq
+								where woq.WORKORDERID = wo.WORKORDERID)) in ({servicegroups})
+		and wo.workorderid in (select wos.WORKORDERID
+								from workorderstates wos
+								where wos.STATUSID = (select sd.STATUSID
+														from statusdefinition sd
+														where sd.STATUSNAME = 'Назначена'))
