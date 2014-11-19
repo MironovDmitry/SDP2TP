@@ -49,6 +49,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -88,6 +89,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SDP_Select_requests.sql.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SDP_Resolution.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

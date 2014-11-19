@@ -61,6 +61,22 @@ namespace SDP2TP.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ваша заявка перенесена в систему управления разработкой бизнес-приложений.
+        ///Новый номер вашей заявки = {tp_request_ID}.
+        ///Как только ваш запрос будет выполнен, вы получите уведомление по почте.
+        ///
+        ///Пожалуйста не отвечайте на данное письмо.
+        ///
+        ///С уважением,
+        ///ИТ департамент DENTSU AEGIS NETWORK РОССИЯ..
+        /// </summary>
+        internal static string SDP_Resolution {
+            get {
+                return ResourceManager.GetString("SDP_Resolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to select wo.WORKORDERID, 
         ///	(select aci.EMAILID 
         ///	from aaacontactinfo aci
@@ -71,13 +87,12 @@ namespace SDP2TP.Properties {
         ///	from aaauser au
         ///	where au.USER_ID = wo.REQUESTERID) FullName,	
         ///	wo.TITLE, 
-        ///	wo.DESCRIPTION, 	
+        ///	wo.DESCRIPTION,
+        ///	(select wod.FULLDESCRIPTION
+        ///	from workordertodescription wod
+        ///	where wod.WORKORDERID = wo.WORKORDERID) FullDescription, 	
         ///	(select sd.Name 
-        ///	from servicedefinition sd
-        ///	where sd.SERVICEID = wo.SERVICEID)	ServiceName,
-        ///	(select qd.QUEUENAME
-        ///	from queuedefinition qd
-        ///	where qd.QUEUEID =  [rest of string was truncated]&quot;;.
+        ///	from servicedefinition  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SDP_Select_requests {
             get {
