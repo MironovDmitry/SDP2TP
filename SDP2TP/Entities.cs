@@ -381,33 +381,45 @@ namespace SDP2TP
             public Project(string sdpApplication)
             {                
               //this.Id = GetProjectsIDbyName(sdpApplication);                    
-                switch (sdpApplication)
+                Dictionary<string,Int16> maps = ConfigurationManager.AppSettings["sdpApplication_TPProject_Mapping"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(map => map.Split(':')).ToDictionary(map => map[0], map => Convert.ToInt16(map[1]));
+
+                if (maps.ContainsKey(sdpApplication))
                 {
-                    case "1CAccounting":
-                        this.Id = 16286;
-                        break;
-                    case "1CBitFinance":
-                        this.Id = 16287;
-                        break;
-                    case "1CConsolidation":
-                        this.Id = 16909;
-                        break;
-                    case "1CDocFlow":
-                        this.Id = 18349;
-                        break;
-                    case "1CHR":
-                        this.Id = 16285;
-                        break;
-                    case "1CMediaController":
-                        this.Id = 16284;
-                        break;
-                    case "1CMediaFinance":
-                        this.Id = 3283;
-                        break;
-                    default:
-                        this.Id = 2584;
-                        break;
+                    this.Id = maps[sdpApplication];
                 }
+                else
+                {
+                    this.Id = maps["default"];
+                }
+                
+                
+                //switch (sdpApplication)
+                //{
+                //    case "1CAccounting":
+                //        this.Id = 16286;
+                //        break;
+                //    case "1CBitFinance":
+                //        this.Id = 16287;
+                //        break;
+                //    case "1CConsolidation":
+                //        this.Id = 16909;
+                //        break;
+                //    case "1CDocFlow":
+                //        this.Id = 18349;
+                //        break;
+                //    case "1CHR":
+                //        this.Id = 16285;
+                //        break;
+                //    case "1CMediaController":
+                //        this.Id = 16284;
+                //        break;
+                //    case "1CMediaFinance":
+                //        this.Id = 3283;
+                //        break;
+                //    default:
+                //        this.Id = 2584;
+                //        break;
+                //}
 
                 if(ConfigurationManager.AppSettings["PATH_TP"] == "https://cis.tpondemand.com/api/v1/")
                 {

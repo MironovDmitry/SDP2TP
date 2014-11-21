@@ -25,13 +25,13 @@ namespace SDP2TP
         //private static string PATH_TP = ConfigurationManager.AppSettings["PATH_TP"];
         //private static string SDP_API_KEY = "TECHNICIAN_KEY=" + ConfigurationManager.AppSettings["SDP_API_KEY"];
         //private static string TP_TOKEN = ConfigurationManager.AppSettings["TP_Token"];
+        //public static Dictionary<string,Int16> maps;
 
         static void Main(string[] args)
         {
-
             ProceccSDPRecords(GetSDPRequests());            
-        }      
-
+        }
+                
         private static List<SDP.Request> GetSDPRequests()
         {
             List<SDP.Request> rs = new List<SDP.Request>();
@@ -102,5 +102,7 @@ namespace SDP2TP
                 req.updateSDPRequest();                                
             }            
         }
+    
+    
     }
 }
