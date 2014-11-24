@@ -29,7 +29,15 @@ select wo.WORKORDERID,
 	from aaauser au
 	where au.USER_ID= (select wos.ownerid
 						from workorderstates wos
-						where wos.WORKORDERID = wo.WORKORDERID)) Technician
+						where wos.WORKORDERID = wo.WORKORDERID)) Technician,
+	(select udf.udf_char2
+	from workorder_fields udf
+	where udf.workorderid = wo.WORKORDERID) tpEntityType,
+
+	(select group_concat(wor.RECIPIENT_EMAIL SEPARATOR ',')
+						from workorder_recipients wor
+						where wor.WORKORDERID = wo.WORKORDERID
+							and wor.RECIPIENT_EMAIL not like '%helpdesk@%' ) CC_Recepients
 from workorder wo
 	where wo.SERVICEID in (select sd.SERVICEID from servicedefinition sd where sd.NAME in ({services}))
 		and (select qd.QUEUENAME
@@ -42,3 +50,6 @@ from workorder wo
 								where wos.STATUSID = (select sd.STATUSID
 														from statusdefinition sd
 														where sd.STATUSNAME = 'Назначена'))
+		and (select udf.udf_char2
+			from workorder_fields udf
+			where udf.workorderid = wo.WORKORDERID) <> ''

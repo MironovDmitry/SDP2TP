@@ -25,6 +25,8 @@ namespace SDP2TP
             public string SupportGroup { get; set; }
             public string Technician { get; set; }
             public string FullDescription { get; set; }
+            public string tpEntityType { get; set; }
+            public string ccRecepients { get; set; }
         } 
     }
 
@@ -35,18 +37,20 @@ namespace SDP2TP
         {
             public RequestCollection()
             {
-                Requests = new Request[0];
+                Requests = new Entity[0];
             }
 
             [XmlElement("Request")]
-            public Request[] Requests { get; set; }
+            public Entity[] Requests { get; set; }
 
             [XmlAttribute]
             public string Next { get; set; }
         }
                 
-        public class Request
-        {     
+        public class Entity
+        {
+            private int _entityStateID = 0;
+
             public int Id { get; set; }
             public string Name { get; set; }
             public string Description { get; set; }
@@ -60,25 +64,42 @@ namespace SDP2TP
             public string SDP_Technician { get; set; }
             public string SDP_Requester { get; set; }
             public string SDP_Requester_Email { get; set; }
-            public int SDP_ID { get; set; }
-            
+            public int SDP_ID { get; set; }            
             public void AddRequestToTP()
             { 
                 //post request 
-                postRequets(this);
+                postRequet(this);
+                //add cc recepients
+                addCCRecepinets(this);
                 //Assign developer
                 assignDeveloper(this);
                 //Assign requester
-                assignRequester(this);
+                if (this.EntityType.ToUpper() == "REQUEST")
+                {
+                    assignRequester(this);
+                }
             }
-
             public void updateSDPRequest()
             {
                 updateSDPRequestResolution(this);
                 updateSDPRequestStatus(this);
             }
+            public string EntityType { get; set; }
+            public string CC_Recepients { get; set; }
+            //private int EntityStateID 
+            //{
+            //    get
+            //    {
+            //        //return _entityStateID;
+            //        return getInitialEntityStateID(this.Project.Id, this.EntityType);
+            //    }
+            //    set
+            //    {
+            //        _entityStateID = getInitialEntityStateID(this.Project.Id, this.EntityType);
+            //    }
+            //}
 
-            private static bool updateSDPRequestResolution(TP.Request r)
+            private static bool updateSDPRequestResolution(TP.Entity r)
             {
                 //http://rumsk2hpdm02.east.msk/sdpapi/request/80218?OPERATION_NAME=GET_REQUEST&TECHNICIAN_KEY=FDC4BEF6-6C99-44E3-8217-FBF072DCAAB2
                 ///request/79376/RESOLUTION?OPERATION_NAME=ADD_RESOLUTION&TECHNICIAN_KEY=FDC4BEF6-6C99-44E3-8217-FBF072DCAAB2&INPUT_DATA=<Details><resolution><resolutiontext>test</resolutiontext></resolution></Details>
@@ -111,7 +132,7 @@ namespace SDP2TP
                     return false;
                 }
             }
-            private static bool updateSDPRequestStatus(TP.Request r)
+            private static bool updateSDPRequestStatus(TP.Entity r)
             {
                 /* /request/<request id>
                  * CLOSE_REQUEST
@@ -144,24 +165,64 @@ namespace SDP2TP
                     return false;
                 }
             }
-            private static bool postRequets(TP.Request r)
+            private static bool postRequet(TP.Entity r)
             {                
                 //build link to SDP
                 string sdp_path = ConfigurationManager.AppSettings["PATH_SDP"];
                 sdp_path = sdp_path.Substring(0, sdp_path.Length - 7);
-                string linkToSDPWO = sdp_path + "/WorkOrder.do?woMode=viewWO&woID=" + r.SDP_ID.ToString() + " <br />";
-                string xmlRequest = "<Request Name='" + r.Name + "'>";
-                xmlRequest += "<Project Id='" + r.Project.Id + "' />";
-                xmlRequest += "<EntityState Id='34' />";                
-                xmlRequest += "<Description><![CDATA[" + linkToSDPWO + r.Description + "]]></Description>";
-                xmlRequest += "</Request>";
+                string linkToSDPWO = sdp_path + "/WorkOrder.do?woMode=viewWO&woID=" + r.SDP_ID.ToString() + " <br /><br />  ";
+                
+                //depending on tpEntityType in sdpRequest we need to create different tp entities
+                string xmlRequest = "";
+                string tpAPIEntity = "";
+                
+                switch (r.EntityType.ToUpper())
+                { 
+                    case "USERSTORY":
+                        xmlRequest = "<UserStory Name='" + r.Name + "'>";
+                        xmlRequest += "<Project Id='" + r.Project.Id + "' />";
+                        xmlRequest += "<EntityState Id='" + getInitialEntityStateID(r.Project.Id,r.EntityType).ToString() + "' />";                
+                        xmlRequest += "<Description><![CDATA[" + linkToSDPWO + r.Description + "]]></Description>";
+                        xmlRequest += "<Owner id='" + r.getRequesterID() + "'/>";
+                        xmlRequest += "</UserStory>";
 
-                string result = getWebRequestResults("Requests?", "post", xmlRequest);
+                        tpAPIEntity = "UserStories?";
+                        break;
+                    case "BUG":
+                        xmlRequest = "<Bug Name='" + r.Name + "'>";
+                        xmlRequest += "<Project Id='" + r.Project.Id + "' />";
+                        xmlRequest += "<EntityState Id='" + getInitialEntityStateID(r.Project.Id,r.EntityType).ToString() + "' />";                
+                        xmlRequest += "<Description><![CDATA[" + linkToSDPWO + r.Description + "]]></Description>";
+                        xmlRequest += "<Owner id='" + r.getRequesterID() + "'/>";
+                        xmlRequest += "</Bug>";
+
+                        tpAPIEntity = "Bugs?";
+                        break;
+                    case "REQUEST":
+                        xmlRequest = "<Request Name='" + r.Name + "'>";
+                        xmlRequest += "<Project Id='" + r.Project.Id + "' />";
+                        xmlRequest += "<EntityState Id='" + getInitialEntityStateID(r.Project.Id,r.EntityType).ToString() + "' />";                
+                        xmlRequest += "<Description><![CDATA[" + linkToSDPWO + r.Description + "]]></Description>";
+                        xmlRequest += "<Owner id='" + r.getRequesterID() + "'/>";
+                        xmlRequest += "</Request>";
+                        
+                        tpAPIEntity = "Requests?";
+                        break;
+
+                }                
+
+                string result = getWebRequestResults(tpAPIEntity, "POST", xmlRequest);
                 
                 //check if successfull
-                if (result.IndexOf(" Id=") > 0)
+                string searchString = r.EntityType + " Id=";
+                if (result.IndexOf(searchString) > 0)
                 {
-                    r.Id = Convert.ToInt32(result.Substring(13, result.IndexOf(" Name=") - 14));
+                    int start = result.IndexOf(searchString) + searchString.Length + 1;
+                    int end = result.IndexOf(" Name=") - 1;
+                    int len = end - start;
+
+                    r.Id = Convert.ToInt32(result.Substring(start,len));
+
                     return true;
                 }
                 else
@@ -169,12 +230,58 @@ namespace SDP2TP
                     return false;
                 }                
             }
-            private static bool assignDeveloper(TP.Request r)
+            private static bool addCCRecepinets(TP.Entity entity)
+            {
+                /*
+                 * <Request Id="2972">
+	                    <CustomFields>		
+		                    <Name>ccRecepients</Name>
+		                    <Value nil="true"/>		
+	                    </CustomFields>
+                    </Request>
+                 * */
+                /*
+                 * <Bug Id="2999">
+                        <CustomFields>                        
+                            <Name>ccRecepients</Name>
+                            <Value nil="true"/>
+                        </CustomFields>
+                    </Bug>
+                 */
+                string type = entity.EntityType + "s";
+                if (entity.EntityType.ToUpper() == "USERSTORY")
+                {
+                    type = "UserStories";
+                }
+
+                string request = "<" + entity.EntityType + " Id='" + entity.Id + "'>";
+                request += "<CustomFields>";
+                request += "<Field>";
+                request += "<Name>ccRecepients</Name>";
+                request += "<Value>" + entity.CC_Recepients + "</Value>";
+                request += "</Field>";
+                request += "</CustomFields>";
+                request += "</" + entity.EntityType + ">";
+                
+                string result = getWebRequestResults(type + "?", "POST", request);
+                return true;
+            }
+            private static bool assignDeveloper(TP.Entity r)
             {
                 string developerID = r.getDeveloperID();
                 if (developerID != "0")
                 {
-                    string xmlRequest = "<Assignment><Assignable Id='" + r.Id + "'/><GeneralUser Id='" + developerID + "'></GeneralUser><Role Id='6'/></Assignment>";
+                    /*
+                     * <Role Id="6" Name="Support Person">
+                     * <Role Id="1" Name="Developer">
+                     */
+                    string roleID = "1";
+                    if (r.EntityType.ToUpper() == "REQUEST")
+                    {
+                        roleID = "6";
+                    }
+
+                    string xmlRequest = "<Assignment><Assignable Id='" + r.Id + "'/><GeneralUser Id='" + developerID + "'></GeneralUser><Role Id='" + roleID + "'/></Assignment>";
                     string result = getWebRequestResults("Assignments?", "post", xmlRequest);
 
                     //check if successfull
@@ -195,7 +302,7 @@ namespace SDP2TP
                 }
                 
             }
-            private static bool assignRequester(TP.Request r)
+            private static bool assignRequester(TP.Entity r)
             {
                 //first we need to remove service account from requesters
                 removeRequesters(r);                                
@@ -217,8 +324,8 @@ namespace SDP2TP
                             </Request>
                          * */
 
-                        xmlRequest = "<Request Id='" + r.Id.ToString() + "'><Owner id='" + requesterID + "'/></Request>";
-                        result = getWebRequestResults("Requests?", "POST", xmlRequest);
+                    //xmlRequest = "<Request Id='" + r.Id.ToString() + "'><Owner id='" + requesterID + "'/></Request>";
+                        //result = getWebRequestResults("Requests?", "POST", xmlRequest);
                                 
                         return true;
                     }
@@ -288,7 +395,25 @@ namespace SDP2TP
 
                 return requesterID;
             }
-            private static bool removeRequesters(TP.Request r)
+            private static int getInitialEntityStateID(int projectID, string tpEntityType)
+            {
+                string reqProcess = "projects/" + projectID+"?include=[process[id]]&";
+                string result = getWebRequestResults(reqProcess, "GET");
+                int start = result.IndexOf("ss Id=") + 7;
+                int end = result.IndexOf(" />") - 1;
+                int len = end - start;
+                string processID = result.Substring(start, len);
+
+                string reqEntityState = "entitystates?where=(process.id eq " + processID + ") and (entitytype.name eq '" + tpEntityType + "') and (IsInitial eq 'true')&include=[id]&";
+                result = getWebRequestResults(reqEntityState, "GET");
+                 start = result.IndexOf("Id=") + 4;
+                 end = result.IndexOf(" />") - 1;
+                 len = end - start;
+                string EntityStateID = result.Substring(start, len);
+
+                return Convert.ToInt16(EntityStateID);
+            }
+            private static bool removeRequesters(TP.Entity r)
             {
                 //get ID service account as requester
                 string xmlRemoveRequest = "include=[requesters]";
@@ -429,7 +554,7 @@ namespace SDP2TP
 
             //private int GetProjectsIDbyName(string sdpApplication)
             //{
-            //    //projects?where=Name%20eq%20"test2"
+            //    //projects?where=Name eq "test2"
             //    string tp_project_name = "";
             //    switch (sdpApplication)
             //    {

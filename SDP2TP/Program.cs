@@ -67,6 +67,8 @@ namespace SDP2TP
                     r.Description = reader["Description"].ToString();
                     r.FullDescription = reader["FullDescription"].ToString();
                     r.ApplicationName = reader["ApplicationName"].ToString();
+                    r.tpEntityType = reader["tpEntityType"].ToString();
+                    r.ccRecepients = reader["CC_Recepients"].ToString();
 
                     rs.Add(r);
                 }
@@ -89,7 +91,7 @@ namespace SDP2TP
             foreach(SDP.Request r in sdp_rs)
             {                
                 TP.Project project = new TP.Project(r.ApplicationName); //TO-DO: Add auto assignnent for projects                
-                TP.Request req = new TP.Request();
+                TP.Entity req = new TP.Entity();
                 req.Name = r.Title;
                 req.Project = project;               
                 req.Description = r.FullDescription.Replace("src=\"/inlineimages/WorkOrder", "src=\"http://rumsk2hpdm01/inlineimages/WorkOrder");
@@ -97,6 +99,8 @@ namespace SDP2TP
                 req.SDP_Requester = r.Requester_FullName;
                 req.SDP_Requester_Email = r.Requester_EMail;
                 req.SDP_ID = r.WorkorderID;
+                req.EntityType = r.tpEntityType;
+                req.CC_Recepients = r.ccRecepients;
 
                 req.AddRequestToTP();
                 req.updateSDPRequest();                                
