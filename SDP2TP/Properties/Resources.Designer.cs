@@ -61,18 +61,42 @@ namespace SDP2TP.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ваша заявка перенесена в систему управления разработкой бизнес-приложений.
-        ///Новый номер вашей заявки = {tp_request_ID}.
-        ///Как только ваш запрос будет выполнен, вы получите уведомление по почте.
-        ///
-        ///Пожалуйста не отвечайте на данное письмо.
-        ///
-        ///С уважением,
-        ///ИТ департамент DENTSU AEGIS NETWORK РОССИЯ..
+        ///   Looks up a localized string similar to Добрый день, {RequesterName}.
+        /// 
+        ///Ваша заявка была перенесена в Систему Управления Разработкой бизнес-приложений под новым номером &lt;span style=&quot;font-weight:bold;&quot;&gt;{tp_request_ID}&lt;/span&gt;, просьба использовать его при уточнении статуса выполнения заявки. 
+        ///К сожалению мы не можем назвать точного срока исполнения вашего запроса, но как только мы выполним ваш запрос, вы получите письмо с уведомлением.
+        /// 
+        ///Ответственным за разработку назначен: &lt;span style=&quot;font-weight:bold;&quot;&gt;{developerName}&lt;/span&gt;
+        /// 
+        ///--- Просьб [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SDP_Resolution {
             get {
                 return ResourceManager.GetString("SDP_Resolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (SELECT nwo.NOTIFICATIONID ID, 
+        ///	from_unixtime(n.NOTIFICATIONDATE / 1000) MessageDate,
+        ///	n.SENDERID SenderID, 
+        ///	au.FIRST_NAME SenderFullName, 	
+        ///	aci.EMAILID SenderEmail,
+        ///	n2d.description Description	
+        ///FROM notify_workorder nwo 
+        ///	left join notificationtodesc n2d 
+        ///		on nwo.NOTIFICATIONID = n2d.NOTIFICATIONID
+        ///-- 	left join aaauser au
+        ///	left join notification n
+        ///		on nwo.NOTIFICATIONID = n.NOTIFICATIONID
+        ///		left join aaauser au
+        ///		on n.SENDERID = au.USER_ID
+        ///	left join aaausercontactinfo auci
+        ///		on n.SEN [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string SDP_select_Messages_by_workorderID_sql {
+            get {
+                return ResourceManager.GetString("SDP_select_Messages_by_workorderID_sql", resourceCulture);
             }
         }
         

@@ -1,0 +1,41 @@
+﻿(SELECT nwo.NOTIFICATIONID ID, 
+	from_unixtime(n.NOTIFICATIONDATE / 1000) MessageDate,
+	n.SENDERID SenderID, 
+	au.FIRST_NAME SenderFullName, 	
+	aci.EMAILID SenderEmail,
+	n2d.description Description	
+FROM notify_workorder nwo 
+	left join notificationtodesc n2d 
+		on nwo.NOTIFICATIONID = n2d.NOTIFICATIONID
+-- 	left join aaauser au
+	left join notification n
+		on nwo.NOTIFICATIONID = n.NOTIFICATIONID
+		left join aaauser au
+		on n.SENDERID = au.USER_ID
+	left join aaausercontactinfo auci
+		on n.SENDERID = auci.USER_ID
+	left join aaacontactinfo aci
+		on auci.CONTACTINFO_ID = aci.CONTACTINFO_ID		
+WHERE nwo.WORKORDERID={WorkorderID}
+	and n.SENDERID <> 1)
+
+UNION
+
+(SELECT c.CONVERSATIONID ID,
+	from_unixtime(c.CREATEDTIME/1000) MessageDate,
+	c.REQUESTERID SenderID,	
+	au.FIRST_NAME SenderFullName,	
+	aci.EMAILID SenderEmail,
+	c2d.DESCRIPTION Description
+FROM conversation c
+	left join aaauser au 
+		on c.REQUESTERID = au.USER_ID
+	left join conversationdescription c2d 
+		on c.CONVERSATIONID = c2d.CONVERSATIONID	
+	left join aaausercontactinfo auci
+		on c.REQUESTERID = auci.USER_ID
+	left join aaacontactinfo aci
+		on auci.CONTACTINFO_ID = aci.CONTACTINFO_ID
+WHERE c.WORKORDERID = {WorkorderID})
+
+order by MessageDate

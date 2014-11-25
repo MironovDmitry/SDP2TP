@@ -38,6 +38,7 @@ namespace SDP2TP
 
             //connect to sdp MySql db to get all needed requests  
             MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["SDP_MySQL"].ConnectionString);
+            MySqlConnection con2 = new MySqlConnection(ConfigurationManager.ConnectionStrings["SDP_MySQL"].ConnectionString);
             MySqlCommand cmd = new MySqlCommand();
             //{services}
             string selectServices = ConfigurationManager.AppSettings["SDP_Services_to_select"];
@@ -69,6 +70,7 @@ namespace SDP2TP
                     r.ApplicationName = reader["ApplicationName"].ToString();
                     r.tpEntityType = reader["tpEntityType"].ToString();
                     r.ccRecepients = reader["CC_Recepients"].ToString();
+                    r.Messages = getSDPMessages(con2, r.WorkorderID);
 
                     rs.Add(r);
                 }
@@ -86,6 +88,47 @@ namespace SDP2TP
             return rs;
         }
              
+        private static List<SDP2TP.Message> getSDPMessages(MySqlConnection con, int workorderID)
+        {
+            //SDP.MessageCollection messages = new SDP.MessageCollection();
+            List<SDP2TP.Message> messages = new List<SDP2TP.Message>();
+            
+            MySqlCommand cmd = new MySqlCommand();
+            cmd.CommandText = Properties.Resources.SDP_select_Messages_by_workorderID_sql.Replace("{WorkorderID}", workorderID.ToString());
+            cmd.Connection = con;
+
+            MySqlDataReader reader;
+            try
+            {
+                if (con.State != System.Data.ConnectionState.Open)
+                { 
+                    cmd.Connection.Open();
+                }
+                
+                reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    SDP2TP.Message m = new SDP2TP.Message();
+                    m.ID = Convert.ToInt32(reader["ID"].ToString());
+                    m.MessageDate = Convert.ToDateTime(reader["MessageDate"].ToString());
+                    m.SenderID = Convert.ToInt32(reader["SenderID"].ToString());
+                    m.SenderFullName = reader["SenderFullName"].ToString();
+                    m.SenderEmail = reader["SenderEmail"].ToString();
+                    m.Description = reader["Description"].ToString();
+
+                    messages.Add(m);
+                }
+                reader.Close();
+            }
+            catch (MySqlException ex)
+            {
+                Console.WriteLine("Error: \r\n{0}", ex.ToString());
+            }
+
+            return messages;
+        }
+
         private static void ProceccSDPRecords(List<SDP.Request> sdp_rs)
         {            
             foreach(SDP.Request r in sdp_rs)
@@ -101,6 +144,7 @@ namespace SDP2TP
                 req.SDP_ID = r.WorkorderID;
                 req.EntityType = r.tpEntityType;
                 req.CC_Recepients = r.ccRecepients;
+                req.Messages = r.Messages;
 
                 req.AddRequestToTP();
                 req.updateSDPRequest();                                

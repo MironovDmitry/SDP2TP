@@ -11,6 +11,16 @@ using System.Web;
 
 namespace SDP2TP
 {
+    public class Message
+    {
+        public int ID { get; set; }
+        public DateTime MessageDate { get; set; }
+        public int SenderID { get; set; }
+        public string SenderFullName { get; set; }
+        public string SenderEmail { get; set; }
+        public string Description { get; set; }
+    }
+
     namespace SDP
     {
         public class Request
@@ -27,29 +37,31 @@ namespace SDP2TP
             public string FullDescription { get; set; }
             public string tpEntityType { get; set; }
             public string ccRecepients { get; set; }
-        } 
+            //public MessageCollection Messages { get; set; }
+            public List<SDP2TP.Message> Messages { get; set; }
+        }
     }
 
 
     namespace TP
     {        
-        public class RequestCollection
-        {
-            public RequestCollection()
-            {
-                Requests = new Entity[0];
-            }
+        //public class RequestCollection
+        //{
+        //    public RequestCollection()
+        //    {
+        //        Requests = new Entity[0];
+        //    }
 
-            [XmlElement("Request")]
-            public Entity[] Requests { get; set; }
+        //    [XmlElement("Request")]
+        //    public Entity[] Requests { get; set; }
 
-            [XmlAttribute]
-            public string Next { get; set; }
-        }
+        //    [XmlAttribute]
+        //    public string Next { get; set; }
+        //}
                 
         public class Entity
         {
-            private int _entityStateID = 0;
+            //private int _entityStateID = 0;
 
             public int Id { get; set; }
             public string Name { get; set; }
@@ -73,12 +85,19 @@ namespace SDP2TP
                 addCCRecepinets(this);
                 //Assign developer
                 assignDeveloper(this);
+                if(this.Messages.Count > 0)
+                {
+                    addComments(this);
+                }                
                 //Assign requester
                 if (this.EntityType.ToUpper() == "REQUEST")
                 {
                     assignRequester(this);
                 }
             }
+
+            
+
             public void updateSDPRequest()
             {
                 updateSDPRequestResolution(this);
@@ -86,6 +105,7 @@ namespace SDP2TP
             }
             public string EntityType { get; set; }
             public string CC_Recepients { get; set; }
+            public List<SDP2TP.Message> Messages { get; set; }
             //private int EntityStateID 
             //{
             //    get
@@ -99,6 +119,20 @@ namespace SDP2TP
             //    }
             //}
 
+            private void addComments(Entity entity)
+            {
+                for (int i = 0; i < entity.Messages.Count; i++)
+                {
+                    string xmlRequest = "<Comment>";
+                    xmlRequest += "<Description><![CDATA[" + entity.Messages[i].Description + "]]></Description>";
+                    xmlRequest += "<Owner Id='" + entity.getRequesterID(entity.Messages[i].SenderEmail, entity.Messages[i].SenderFullName).ToString() + "'/>";
+                    xmlRequest += "<General Id='" + entity.Id.ToString() + "'/>";
+                    xmlRequest += "</Comment>";
+
+                    string result = getWebRequestResults("Comments?", "POST", xmlRequest);
+                }
+
+            }            
             private static bool updateSDPRequestResolution(TP.Entity r)
             {
                 //http://rumsk2hpdm02.east.msk/sdpapi/request/80218?OPERATION_NAME=GET_REQUEST&TECHNICIAN_KEY=FDC4BEF6-6C99-44E3-8217-FBF072DCAAB2
@@ -361,14 +395,31 @@ namespace SDP2TP
                 return developerID;
 
             }
-            private string getRequesterID()
+            private string getRequesterID(string userEmail = "", string userFullName = "")
             {
+                string[] requesterName;
+                string email;
+
                 // check that developer exists in TP
-                string[] requesterName = SDP_Requester.Split(null);
+                if (userFullName == "")
+                {
+                    requesterName = SDP_Requester.Split(null);
+                }
+                else
+                {
+                    requesterName = userFullName.Split(null);
+                }
 
-                //string getRequest = "Users?where=LastName eq '" + developerName.Split(null).ElementAt(0) + "'&" + TP_TOKEN;
-                string getRequest = "where=(Email eq '" + SDP_Requester_Email + "')";
+                if (userEmail == "")
+                {
+                    email = SDP_Requester_Email;                    
+                }
+                else
+                {
+                    email = userEmail;
+                }
 
+                string getRequest = getRequest = "where=(Email eq '" + email + "')";
                 string requesterID = "";
 
                 //string getResult = wc.DownloadString(ConfigurationManager.AppSettings["PATH_TP"] + getRequest);
@@ -384,7 +435,7 @@ namespace SDP2TP
                 }
                 else //requester does not exists so create it first
                 {
-                    string postRequest = "<Requester><Kind>Requester</Kind><FirstName>" + requesterName[1] + "</FirstName><LastName>" + requesterName[0] + "</LastName><Email>" + SDP_Requester_Email + "</Email></Requester>";
+                    string postRequest = "<Requester><Kind>Requester</Kind><FirstName>" + requesterName[1] + "</FirstName><LastName>" + requesterName[0] + "</LastName><Email>" + email + "</Email></Requester>";
                     getResult = getWebRequestResults("Requesters?", "post", postRequest);
 
                     int start = getResult.IndexOf(" Id=") + 5;
@@ -483,7 +534,7 @@ namespace SDP2TP
             }
         }
 
-              
+           
         
         public class Project
         {
