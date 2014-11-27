@@ -4,7 +4,7 @@ using System.Text;
 using System.Collections.Generic;
 using System;
 using System.Configuration;
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
 using System.Linq;
 using System.Web;
 
@@ -374,7 +374,8 @@ namespace SDP2TP
                 string developerLastName = SDP_Technician.Split(null).ElementAt(0);
 
                 //string getRequest = "Users?where=LastName eq '" + developerName.Split(null).ElementAt(0) + "'&" + TP_TOKEN;
-                string getRequest = "where=(LastName eq 'Mironov') and (IsActive eq 'true')";
+                //string getRequest = "where=(LastName eq 'Mironov') and (IsActive eq 'true')";
+                string getRequest = "where=(LastName eq '" + developerLastName + "') and (IsActive eq 'true')";
 
                 string developerID = "";
 
