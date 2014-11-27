@@ -105,19 +105,7 @@ namespace SDP2TP
             }
             public string EntityType { get; set; }
             public string CC_Recepients { get; set; }
-            public List<SDP2TP.Message> Messages { get; set; }
-            //private int EntityStateID 
-            //{
-            //    get
-            //    {
-            //        //return _entityStateID;
-            //        return getInitialEntityStateID(this.Project.Id, this.EntityType);
-            //    }
-            //    set
-            //    {
-            //        _entityStateID = getInitialEntityStateID(this.Project.Id, this.EntityType);
-            //    }
-            //}
+            public List<SDP2TP.Message> Messages { get; set; }            
 
             private void addComments(Entity entity)
             {
@@ -217,7 +205,9 @@ namespace SDP2TP
                         xmlRequest += "<Project Id='" + r.Project.Id + "' />";
                         xmlRequest += "<EntityState Id='" + getInitialEntityStateID(r.Project.Id,r.EntityType).ToString() + "' />";                
                         xmlRequest += "<Description><![CDATA[" + linkToSDPWO + r.Description + "]]></Description>";
-                        xmlRequest += "<Owner id='" + r.getRequesterID() + "'/>";
+                        //xmlRequest += "<Owner id='" + r.getRequesterID() + "'/>";
+                        //set owner = developer (#3047)
+                        xmlRequest += "<Owner id='" + r.getDeveloperID() + "'/>";
                         xmlRequest += "</UserStory>";
 
                         tpAPIEntity = "UserStories?";
@@ -227,7 +217,9 @@ namespace SDP2TP
                         xmlRequest += "<Project Id='" + r.Project.Id + "' />";
                         xmlRequest += "<EntityState Id='" + getInitialEntityStateID(r.Project.Id,r.EntityType).ToString() + "' />";                
                         xmlRequest += "<Description><![CDATA[" + linkToSDPWO + r.Description + "]]></Description>";
-                        xmlRequest += "<Owner id='" + r.getRequesterID() + "'/>";
+                        //xmlRequest += "<Owner id='" + r.getRequesterID() + "'/>";
+                        //set owner = developer (#3047)
+                        xmlRequest += "<Owner id='" + r.getDeveloperID() + "'/>";
                         xmlRequest += "</Bug>";
 
                         tpAPIEntity = "Bugs?";
