@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="AMService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://rumsk1spm01:900/AsyncMail/AMService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://rumsk1spm01:900/AsyncMail/AMService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://rumsk1spm01:900/AsyncMail/AMService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/AsyncMailService" />
+      <xsd:import schemaLocation="http://rumsk1spm01:900/AsyncMail/AMService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IAMService_AddToMailQueue_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddToMailQueue" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_AddToMailQueue_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddToMailQueueResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_AddToMailQueueAsIs_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddToMailQueueAsIs" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_AddToMailQueueAsIs_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddToMailQueueAsIsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_AddToMailQueueTemplate_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddToMailQueueTemplate" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_AddToMailQueueTemplate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddToMailQueueTemplateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_CreateAppointment_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateAppointment" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_CreateAppointment_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateAppointmentResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_UpdateAppointment_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateAppointment" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_UpdateAppointment_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateAppointmentResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_MoveAppointment_InputMessage">
+    <wsdl:part name="parameters" element="tns:MoveAppointment" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_MoveAppointment_OutputMessage">
+    <wsdl:part name="parameters" element="tns:MoveAppointmentResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_DeleteAppointment_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteAppointment" />
+  </wsdl:message>
+  <wsdl:message name="IAMService_DeleteAppointment_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteAppointmentResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IAMService">
+    <wsdl:operation name="AddToMailQueue">
+      <wsdl:input wsaw:Action="http://tempuri.org/IAMService/AddToMailQueue" message="tns:IAMService_AddToMailQueue_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IAMService/AddToMailQueueResponse" message="tns:IAMService_AddToMailQueue_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddToMailQueueAsIs">
+      <wsdl:input wsaw:Action="http://tempuri.org/IAMService/AddToMailQueueAsIs" message="tns:IAMService_AddToMailQueueAsIs_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IAMService/AddToMailQueueAsIsResponse" message="tns:IAMService_AddToMailQueueAsIs_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddToMailQueueTemplate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IAMService/AddToMailQueueTemplate" message="tns:IAMService_AddToMailQueueTemplate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IAMService/AddToMailQueueTemplateResponse" message="tns:IAMService_AddToMailQueueTemplate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateAppointment">
+      <wsdl:input wsaw:Action="http://tempuri.org/IAMService/CreateAppointment" message="tns:IAMService_CreateAppointment_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IAMService/CreateAppointmentResponse" message="tns:IAMService_CreateAppointment_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateAppointment">
+      <wsdl:input wsaw:Action="http://tempuri.org/IAMService/UpdateAppointment" message="tns:IAMService_UpdateAppointment_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IAMService/UpdateAppointmentResponse" message="tns:IAMService_UpdateAppointment_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="MoveAppointment">
+      <wsdl:input wsaw:Action="http://tempuri.org/IAMService/MoveAppointment" message="tns:IAMService_MoveAppointment_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IAMService/MoveAppointmentResponse" message="tns:IAMService_MoveAppointment_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteAppointment">
+      <wsdl:input wsaw:Action="http://tempuri.org/IAMService/DeleteAppointment" message="tns:IAMService_DeleteAppointment_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IAMService/DeleteAppointmentResponse" message="tns:IAMService_DeleteAppointment_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IAMService" type="tns:IAMService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="AddToMailQueue">
+      <soap:operation soapAction="http://tempuri.org/IAMService/AddToMailQueue" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddToMailQueueAsIs">
+      <soap:operation soapAction="http://tempuri.org/IAMService/AddToMailQueueAsIs" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddToMailQueueTemplate">
+      <soap:operation soapAction="http://tempuri.org/IAMService/AddToMailQueueTemplate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateAppointment">
+      <soap:operation soapAction="http://tempuri.org/IAMService/CreateAppointment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateAppointment">
+      <soap:operation soapAction="http://tempuri.org/IAMService/UpdateAppointment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MoveAppointment">
+      <soap:operation soapAction="http://tempuri.org/IAMService/MoveAppointment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteAppointment">
+      <soap:operation soapAction="http://tempuri.org/IAMService/DeleteAppointment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="AMService">
+    <wsdl:port name="BasicHttpBinding_IAMService" binding="tns:BasicHttpBinding_IAMService">
+      <soap:address location="http://rumsk1spm01:900/AsyncMail/AMService.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

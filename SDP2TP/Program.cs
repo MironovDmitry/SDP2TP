@@ -17,16 +17,6 @@ namespace SDP2TP
 {
     class Program
     {
-        // http://www.manageengine.com/products/service-desk/help/adminguide/index.html
-        //http://rumsk2hpdm02.east.msk/sdpapi/request/80218?OPERATION_NAME=GET_REQUEST&TECHNICIAN_KEY=FDC4BEF6-6C99-44E3-8217-FBF072DCAAB2
-
-        // globals        
-        //private static string PATH_SDP = ConfigurationManager.AppSettings["PATH_SDP"];
-        //private static string PATH_TP = ConfigurationManager.AppSettings["PATH_TP"];
-        //private static string SDP_API_KEY = "TECHNICIAN_KEY=" + ConfigurationManager.AppSettings["SDP_API_KEY"];
-        //private static string TP_TOKEN = ConfigurationManager.AppSettings["TP_Token"];
-        //public static Dictionary<string,Int16> maps;
-
         static void Main(string[] args)
         {
             ProceccSDPRecords(GetSDPRequests());            
@@ -150,7 +140,10 @@ namespace SDP2TP
                 req.updateSDPRequest();                                
             }            
         }
-    
-    
+
+        private static void SendEmail()
+        { 
+            
+        }
     }
 }

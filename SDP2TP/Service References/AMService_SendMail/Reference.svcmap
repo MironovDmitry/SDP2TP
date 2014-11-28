@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="64719fc3-5acf-4ee5-92be-75bf9749db65" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://rumsk1spm01:900/AsyncMail/AMService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="AMService.xsd" MetadataType="Schema" ID="be9a7ba8-4149-4527-a0fd-faf2c2931d14" SourceId="1" SourceUrl="http://rumsk1spm01:900/AsyncMail/AMService.svc?xsd=xsd0" />
+    <MetadataFile FileName="AMService1.xsd" MetadataType="Schema" ID="0ffe0349-d13e-49ae-baef-78f6bd61d706" SourceId="1" SourceUrl="http://rumsk1spm01:900/AsyncMail/AMService.svc?xsd=xsd3" />
+    <MetadataFile FileName="AMService2.xsd" MetadataType="Schema" ID="85c9565c-3ab9-42c2-8b5e-7959c8514e8c" SourceId="1" SourceUrl="http://rumsk1spm01:900/AsyncMail/AMService.svc?xsd=xsd2" />
+    <MetadataFile FileName="AMService.wsdl" MetadataType="Wsdl" ID="2b7afde7-4d5e-4afe-b899-c7c097647801" SourceId="1" SourceUrl="http://rumsk1spm01:900/AsyncMail/AMService.svc?wsdl" />
+    <MetadataFile FileName="AMService.disco" MetadataType="Disco" ID="725ddb2f-994a-43d4-9fea-9a92637acfc0" SourceId="1" SourceUrl="http://rumsk1spm01:900/AsyncMail/AMService.svc?disco" />
+    <MetadataFile FileName="AMService3.xsd" MetadataType="Schema" ID="d4331b0a-f823-4e4d-a76c-4e7d3b0ffd71" SourceId="1" SourceUrl="http://rumsk1spm01:900/AsyncMail/AMService.svc?xsd=xsd1" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

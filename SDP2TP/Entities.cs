@@ -145,14 +145,29 @@ namespace SDP2TP
 
                 string result = getSDPWebRequestResults(requestString, "POST", "");
 
-                if (result.IndexOf("")>0)
+                if (result.IndexOf("<statuscode>200") > 0)
                 {
+                    SendEmail(r, text);
                     return true;
                 }
                 else
                 {
                     return false;
                 }
+            }
+            private static void SendEmail(Entity entity, string text)
+            {
+                //String subject = "TP " + reportType + " Recap : " + reportStartDate.ToString("dddd dd MMMM", CultureInfo.CreateSpecificCulture("ru-RU")) + (reportType == "Weekly" ? " - " + reportEndDate.ToString("dddd dd MMMM", CultureInfo.CreateSpecificCulture("ru-RU")) : "");
+                string subject = "Вашей заявке '" + entity.Name + "' присвоен новый номер #" + entity.Id.ToString();
+                string senderAddress = "support@dentsuaegis.ru";
+                string recepinetsList = entity.SDP_Requester_Email;
+                //String recepinetsList = "Dmitry.mironov@dentsuaegis.ru";
+                String serviceName = "SDP2TP";                
+                String bodyHTML = text;
+
+                var mailClient = new AMService_SendMail.AMServiceClient();
+                mailClient.AddToMailQueueAsIs(subject, bodyHTML, senderAddress, recepinetsList, 5, AMService_SendMail.PriorityEnum.Normal, null, serviceName);
+                mailClient.Close();                
             }
             private static bool updateSDPRequestStatus(TP.Entity r)
             {
@@ -280,7 +295,7 @@ namespace SDP2TP
                     type = "UserStories";
                     if (entity.CC_Recepients != "")
                     {
-                        entity.CC_Recepients += entity.SDP_Requester_Email;
+                        entity.CC_Recepients += ";"+entity.SDP_Requester_Email;
                     }
                     else
                     {
@@ -291,7 +306,7 @@ namespace SDP2TP
                 {
                     if (entity.CC_Recepients != "")
                     {
-                        entity.CC_Recepients += entity.SDP_Requester_Email;
+                        entity.CC_Recepients += ";" + entity.SDP_Requester_Email;
                     }
                     else
                     {
