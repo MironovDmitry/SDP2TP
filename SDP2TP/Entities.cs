@@ -278,8 +278,28 @@ namespace SDP2TP
                 if (entity.EntityType.ToUpper() == "USERSTORY")
                 {
                     type = "UserStories";
+                    if (entity.CC_Recepients != "")
+                    {
+                        entity.CC_Recepients += entity.SDP_Requester_Email;
+                    }
+                    else
+                    {
+                        entity.CC_Recepients = entity.SDP_Requester_Email;
+                    }                    
+                }
+                else if (entity.EntityType.ToUpper() == "BUG")
+                {
+                    if (entity.CC_Recepients != "")
+                    {
+                        entity.CC_Recepients += entity.SDP_Requester_Email;
+                    }
+                    else
+                    {
+                        entity.CC_Recepients = entity.SDP_Requester_Email;
+                    }
                 }
 
+                
                 string request = "<" + entity.EntityType + " Id='" + entity.Id + "'>";
                 request += "<CustomFields>";
                 request += "<Field>";
@@ -292,6 +312,7 @@ namespace SDP2TP
                 string result = getWebRequestResults(type + "?", "POST", request);
                 return true;
             }
+            
             private static bool assignDeveloper(TP.Entity r)
             {
                 string developerID = r.getDeveloperID();
