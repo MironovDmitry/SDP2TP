@@ -7,10 +7,11 @@ using System.Configuration;
 //using Newtonsoft.Json;
 using System.Linq;
 using System.Web;
+using NLog;
 
 
 namespace SDP2TP
-{
+{    
     public class Message
     {
         public int ID { get; set; }
@@ -62,6 +63,7 @@ namespace SDP2TP
         public class Entity
         {
             //private int _entityStateID = 0;
+            private static Logger logger = LogManager.GetCurrentClassLogger();
 
             public int Id { get; set; }
             public string Name { get; set; }
@@ -78,20 +80,26 @@ namespace SDP2TP
             public string SDP_Requester_Email { get; set; }
             public int SDP_ID { get; set; }            
             public void AddRequestToTP()
-            { 
+            {
+                logger.Trace(this.SDP_ID.ToString());
                 //post request 
+                logger.Trace("-- Posting to TP");
                 postRequet(this);
                 //add cc recepients
+                logger.Trace("-- Adding CC recepients");
                 addCCRecepinets(this);
                 //Assign developer
+                logger.Trace("-- Assigning developer");
                 assignDeveloper(this);
                 if(this.Messages.Count > 0)
                 {
+                    logger.Trace("-- Adding comments");
                     addComments(this);
                 }                
                 //Assign requester
                 if (this.EntityType.ToUpper() == "REQUEST")
                 {
+                    logger.Trace("-- Assigning requester");
                     assignRequester(this);
                 }
             }
@@ -100,6 +108,7 @@ namespace SDP2TP
 
             public void updateSDPRequest()
             {
+                logger.Trace("-- Update DSP request");
                 updateSDPRequestResolution(this);
                 updateSDPRequestStatus(this);
             }
@@ -133,7 +142,7 @@ namespace SDP2TP
                     </resolution>
                 </Details>
                  * */
-
+                logger.Trace("---- Start updating SDP request");
                 string SDP_API_KEY = "TECHNICIAN_KEY=" + ConfigurationManager.AppSettings["SDP_API_KEY"];
                 string text = Properties.Resources.SDP_Resolution.Replace("{tp_request_ID}", r.Id.ToString());
                 text = text.Replace("{RequesterName}", r.SDP_Requester.Split(null)[1].ToString());
@@ -143,15 +152,19 @@ namespace SDP2TP
                 string xmlRequest = "<Details><resolution><resolutiontext>" + HttpUtility.UrlEncode(HttpUtility.HtmlEncode(text)) + "</resolutiontext></resolution></Details>";
                 string requestString = "/request/" + r.SDP_ID.ToString() + "/resolution?OPERATION_NAME=ADD_RESOLUTION&" + SDP_API_KEY + "&INPUT_DATA=" + xmlRequest;
 
+                logger.Trace("---- Sent to SDP");
                 string result = getSDPWebRequestResults(requestString, "POST", "");
-
+                
                 if (result.IndexOf("<statuscode>200") > 0)
                 {
+                    logger.Trace("---- Sent to SDP = OK");
+                    logger.Trace("---- Send email to requester");
                     SendEmail(r, text);
                     return true;
                 }
                 else
                 {
+                    logger.Trace("---- Sent to SDP = FAILED");
                     return false;
                 }
             }
@@ -186,19 +199,23 @@ namespace SDP2TP
                         </Details>
                     </Operation>
                  * */
+                logger.Trace("---- Start updating SDP request status");
                 string SDP_API_KEY = "TECHNICIAN_KEY=" + ConfigurationManager.AppSettings["SDP_API_KEY"];
                 //string text = Properties.Resources.SDP_Resolution.Replace("{tp_request_ID}", r.Id.ToString());
                 string xmlRequest = "<Operation><Details><closeAccepted>Accepted</closeAccepted><closeComment>Закрыто автоматически. ТП request " + r.Id.ToString() + "</closeComment></Details></Operation>";
                 string requestString = "/request/" + r.SDP_ID.ToString() + "?OPERATION_NAME=CLOSE_REQUEST&" + SDP_API_KEY + "&INPUT_DATA=" + xmlRequest;
 
+                logger.Trace("---- Sent to SDP");
                 string result = getSDPWebRequestResults(requestString, "POST", "");
 
-                if (result.IndexOf("") > 0)
+                if (result.IndexOf("<statuscode>200") > 0)
                 {
+                    logger.Trace("---- Status updated = OK");
                     return true;
                 }
                 else
                 {
+                    logger.Trace("---- Status updated = FAILED");
                     return false;
                 }
             }

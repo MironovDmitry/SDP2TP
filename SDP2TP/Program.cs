@@ -10,25 +10,34 @@ using System.Net;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
-
+using NLog;
 using System.Web;
 
 namespace SDP2TP
 {
     class Program
-    {
+    {        
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         static void Main(string[] args)
         {
-            ProceccSDPRecords(GetSDPRequests());            
+            logger.Info("************************ START ******************************************");
+            logger.Info("");
+            logger.Info("SDP2TP started");
+            ProceccSDPRecords(GetSDPRequests());
+            
+            logger.Info("");
+            logger.Info("************************ END ******************************************");
         }
                 
         private static List<SDP.Request> GetSDPRequests()
         {
+            logger.Info("Start collecting SDP requests");
             List<SDP.Request> rs = new List<SDP.Request>();
 
             //connect to sdp MySql db to get all needed requests  
             MySqlConnection con = new MySqlConnection(ConfigurationManager.ConnectionStrings["SDP_MySQL"].ConnectionString);
             MySqlConnection con2 = new MySqlConnection(ConfigurationManager.ConnectionStrings["SDP_MySQL"].ConnectionString);
+            logger.Info("Connecting to : " + con.ConnectionString);
             MySqlCommand cmd = new MySqlCommand();
             //{services}
             string selectServices = ConfigurationManager.AppSettings["SDP_Services_to_select"];
@@ -41,8 +50,11 @@ namespace SDP2TP
             MySqlDataReader reader;
             try
             {
+                logger.Trace("Openning MySQL connection");
                 cmd.Connection.Open();
-                reader = cmd.ExecuteReader();                
+                reader = cmd.ExecuteReader();
+
+                logger.Trace("reader hasRows = " + reader.HasRows);
 
                 while (reader.Read())
                 {
@@ -62,19 +74,24 @@ namespace SDP2TP
                     r.ccRecepients = reader["CC_Recepients"].ToString();
                     r.Messages = getSDPMessages(con2, r.WorkorderID);
 
+                    logger.Trace("WorkorderID : " + r.WorkorderID);
+
                     rs.Add(r);
                 }
                 reader.Close();
             }
             catch (MySqlException ex)
             {
+                logger.Trace(ex.ToString());
                 Console.WriteLine("Error: \r\n{0}", ex.ToString());
             }
             finally
             {
                 cmd.Connection.Close();
+                logger.Trace("MySQL connection closed");
             }
 
+            logger.Trace("Total number of SDP.Requests to process = " + rs.Count.ToString());
             return rs;
         }
              
@@ -120,9 +137,11 @@ namespace SDP2TP
         }
 
         private static void ProceccSDPRecords(List<SDP.Request> sdp_rs)
-        {            
+        {
+            logger.Trace("Start processing SDP.Requests");
             foreach(SDP.Request r in sdp_rs)
-            {                
+            {
+                logger.Trace("Processing SDP.Request : " + r.WorkorderID);
                 TP.Project project = new TP.Project(r.ApplicationName); //TO-DO: Add auto assignnent for projects                
                 TP.Entity req = new TP.Entity();
                 req.Name = r.Title;
@@ -136,14 +155,10 @@ namespace SDP2TP
                 req.CC_Recepients = r.ccRecepients;
                 req.Messages = r.Messages;
 
+                logger.Trace("Add request to TP");
                 req.AddRequestToTP();
                 req.updateSDPRequest();                                
             }            
-        }
-
-        private static void SendEmail()
-        { 
-            
-        }
+        }        
     }
 }
