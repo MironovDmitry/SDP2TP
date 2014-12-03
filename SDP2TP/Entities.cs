@@ -118,17 +118,18 @@ namespace SDP2TP
 
             private void addComments(Entity entity)
             {
+                logger.Trace("-- Adding Comments = " + entity.Messages.Count);
                 for (int i = 0; i < entity.Messages.Count; i++)
                 {
                     string xmlRequest = "<Comment>";
-                    xmlRequest += "<Description><![CDATA[" + entity.Messages[i].Description + "]]></Description>";
+                    xmlRequest += "<Description><![CDATA[" + entity.Messages[i].Description.Replace("src=\"/inlineimages/WorkOrder", "src=\"http://rumsk2hpdm01/inlineimages/WorkOrder") + "]]></Description>";
                     xmlRequest += "<Owner Id='" + entity.getRequesterID(entity.Messages[i].SenderEmail, entity.Messages[i].SenderFullName).ToString() + "'/>";
                     xmlRequest += "<General Id='" + entity.Id.ToString() + "'/>";
                     xmlRequest += "</Comment>";
 
                     string result = getWebRequestResults("Comments?", "POST", xmlRequest);
                 }
-
+                logger.Trace("-- Comments added");
             }            
             private static bool updateSDPRequestResolution(TP.Entity r)
             {
