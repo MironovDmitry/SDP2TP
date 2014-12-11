@@ -173,7 +173,7 @@ namespace SDP2TP
             {
                 //String subject = "TP " + reportType + " Recap : " + reportStartDate.ToString("dddd dd MMMM", CultureInfo.CreateSpecificCulture("ru-RU")) + (reportType == "Weekly" ? " - " + reportEndDate.ToString("dddd dd MMMM", CultureInfo.CreateSpecificCulture("ru-RU")) : "");
                 string subject = "Вашей заявке '" + entity.Name + "' присвоен новый номер #" + entity.Id.ToString();
-                string senderAddress = "support@dentsuaegis.ru";
+                string senderAddress = "support@aemedia.ru";
                 string recepinetsList = entity.SDP_Requester_Email;
                 //String recepinetsList = "Dmitry.mironov@dentsuaegis.ru";
                 String serviceName = "SDP2TP";                
