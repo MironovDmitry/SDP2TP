@@ -102,9 +102,12 @@ namespace SDP2TP
                     logger.Trace("-- Assigning requester");
                     assignRequester(this);
                 }
+                //Assign team
+                logger.Trace("-- Assigning team");
+                assignTeam(this);
             }
 
-            
+                       
 
             public void updateSDPRequest()
             {
@@ -413,6 +416,40 @@ namespace SDP2TP
                     {
                         return false;
                     }                
+            }
+            private void assignTeam(TP.Entity r)
+            {
+                //<UserStory id='3219'>
+                //  <teamStates>    
+                //    <teamState>
+                //        <Team id='3220'/>
+                //    </teamState>
+                //  </teamStates>
+                //</UserStory>
+                
+                string result = "";
+
+                Dictionary<string,Int16> maps = ConfigurationManager.AppSettings["tpProject_Team_Mapping"].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(map => map.Split(':')).ToDictionary(map => map[0], map => Convert.ToInt16(map[1]));
+                
+                if (maps.ContainsKey(r.Project.Id.ToString()) && (r.EntityType.ToUpper() == "USERSTORY" | r.EntityType.ToUpper() == "BUG"))
+                {
+                    //teamID = maps[r.Project.Id.ToString()];
+                    string tpAPITntities = "Userstories";
+
+                    switch (r.EntityType.ToUpper())
+                    {
+                        case "USERSTORY":
+                            tpAPITntities = "Userstories?";
+                            break;
+                        case "BUG":
+                            tpAPITntities = "Bugs?";
+                            break;
+                    }
+
+                    string xmlRequest = "<" + r.EntityType + " id='" + r.Id + "'><teamStates><teamState><Team id='";
+                    xmlRequest += maps[r.Project.Id.ToString()].ToString() + "'/></teamState></teamStates></" + r.EntityType + ">";
+                    result = getWebRequestResults(tpAPITntities, "post", xmlRequest);
+                }                                 
             }
             private string getDeveloperID()
             {

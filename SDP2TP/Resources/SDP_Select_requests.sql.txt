@@ -52,4 +52,4 @@ from workorder wo
 														where sd.STATUSNAME = 'Назначена'))
 		and (select udf.udf_char2
 			from workorder_fields udf
-			where udf.workorderid = wo.WORKORDERID) <> ''
+			where udf.workorderid = wo.WORKORDERID) not in ('0','')
