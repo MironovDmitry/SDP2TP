@@ -38,4 +38,21 @@ FROM conversation c
 		on auci.CONTACTINFO_ID = aci.CONTACTINFO_ID
 WHERE c.WORKORDERID = {WorkorderID})
 
+UNION
+
+(select notes.NOTESID ID,
+	from_unixtime(notes.NOTESDATE/1000) MessageDate,
+	notes.USERID SenderID,	
+	au.FIRST_NAME SenderFullName,	
+	aci.EMAILID SenderEmail,
+	CONCAT("Примечание :: ",notes.NOTESTEXT) Description
+FROM notes
+	left join aaauser au 
+		on notes.USERID = au.USER_ID		
+	left join aaausercontactinfo auci
+		on notes.USERID = auci.USER_ID
+	left join aaacontactinfo aci
+		on auci.CONTACTINFO_ID = aci.CONTACTINFO_ID
+WHERE notes.WORKORDERID = {WorkorderID})
+
 order by MessageDate
