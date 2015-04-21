@@ -585,15 +585,37 @@ namespace SDP2TP
                 string tp = ConfigurationManager.AppSettings["PATH_TP"] + requestString + ConfigurationManager.AppSettings["TP_Token"];
                 if (requestMethod.ToUpper() == "GET")
                 {
-                    return wc.DownloadString(tp + "&" + data);
+                    try
+                    {
+                        return wc.DownloadString(tp + "&" + data);
+                    }
+                    catch
+                    {
+                              return "";                 
+                    }
                 }
                 else if (requestMethod.ToUpper() == "POST")
                 {
-                    return wc.UploadString(tp, "POST", data);                    
+                    try
+                    {
+                        return wc.UploadString(tp, "POST", data);
+                    }
+                    catch 
+                    {
+                        return "";
+                        
+                    }                    
                 }
                 else if (requestMethod.ToUpper() == "DELETE")
                 {
-                    return wc.UploadString(tp, "DELETE", data); 
+                    try
+                    {
+                        return wc.UploadString(tp, "DELETE", data);
+                    }
+                    catch 
+                    {
+                        return "";                    
+                    } 
                 }
                 else
                 {
